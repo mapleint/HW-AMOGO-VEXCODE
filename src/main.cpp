@@ -9,8 +9,7 @@
 
 // ---- START VEXCODE CONFIGURED DEVICES ----
 // Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Controller1          controller                    
+u// Controller1          controller                    
 // lb                   motor         13              
 // lf                   motor         11              
 // rb                   motor         14              
@@ -22,7 +21,7 @@
 // ---- END VEXCODE CONFIGURED DEVICES ----
 
 
-
+  
 #include "vex.h"
 using namespace vex;
 
@@ -44,7 +43,7 @@ const int THRESH     =  5;  // When joystick is within this, the motors will set
 const int DELAY_TIME =  10; // Delay time for loops (ms)
 
 const int MOGO_OUT   =  1150; // Out position for the mogo lift
-const int MOGO_NEUT  = 700;   // Neutral Mogo position
+//const int MOGO_NEUT  = 700;   // Neutral Mogo position
 
 const int TILTER_IN  = -20;  // Tilter In Position
 const int TILTER_OUT = -315; // Tilter Out Position
@@ -299,10 +298,6 @@ void usercontrol(void) {
   // User control code here, inside the loop
   // Parameters for user control
   bool mogo_up;
-  bool neut = 0;
-  int mogo_lock = 0;
-  bool is_up = true;
-  int mogo_timer = 0;
 
   bool tilter_up;
   bool tilter_lock = 0;
@@ -321,7 +316,7 @@ void usercontrol(void) {
 
   coast_drive();
 
-  while (1) {
+ while (1) {
     // This is the main execution loop for the user control program.
     // Each time through the loop your program should update motor + servo
     // values based on feedback from the joysticks.
@@ -332,7 +327,7 @@ void usercontrol(void) {
     set_tank(l_joy, r_joy);
     
 
-    int mogo_dir = Controller1.ButtonX().pressing() ? 127 : (Controller1.ButtonY.pressing() ? -127 : 0);
+    int mogo_dir = Controller1.ButtonX.pressing() ? 127 : (Controller1.ButtonY.pressing() ? -127 : 0);
 
     set_mogo(mogo_dir);
 
