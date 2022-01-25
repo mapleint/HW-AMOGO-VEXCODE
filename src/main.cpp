@@ -325,101 +325,30 @@ void usercontrol(void) {
     // This is the main execution loop for the user control program.
     // Each time through the loop your program should update motor + servo
     // values based on feedback from the joysticks.
-
     
-    ///
     // Joysticks
-    ///
-
-    // Ternary operator (one line if statement) for controller deadzone
-    // int x = some condition   ?   x is this if condition was true   :   x is this if condition was false;
-    int l_joy = abs(Controller1.Axis3.value())>THRESH ? Controller1.Axis3.value() : 0;
-    int r_joy = abs(Controller1.Axis2.value())>THRESH ? Controller1.Axis2.value() : 0;
+    int l_joy = abs(Controller1.Axis3.value()) > THRESH ? Controller1.Axis3.value() : 0;
+    int r_joy = abs(Controller1.Axis2.value()) > THRESH ? Controller1.Axis2.value() : 0;
     set_tank(l_joy, r_joy);
     
 
+    int mogo_dir = Controller1.ButtonX().pressing() ? 127 : (Controller1.ButtonY.pressing() ? -127 : 0);
 
-    ///
-    // Mogo
-    //  - mogo has two positions, pressing L1 toggles it between them
-    ///
-
-    // Flip boolean when button is pressed
-    if (Controller1.ButtonL1.pressing() && mogo_lock==0) {
-      if (neut) {
-        mogo_up = false;
-      } else {
-        mogo_up = !mogo_up;
-      }
-      neut = false;
-      mogo_lock = 1;
-      // mogo_lock makes it so this if statement only runs once when the button is pressed
-      // if this lock didn't exist, while the button is pressed, mogo_up would spam between
-      // true and false, causing the mechanism to jitter
-    } 
-    else if (Controller1.ButtonL1.pressing()) {
-      if (mogo_up) {
-        mogo_timer+=DELAY_TIME;
-        if (mogo_timer>=300) {
-          neut = true;
-        }
-      }
-
-    }
-    else if (!Controller1.ButtonL1.pressing()) {
-      mogo_lock = 0;
-      mogo_timer = 0;
-    }
-
-    // Have the motor go to a position depending on boolean state.
-    // This runs the motor at full power until the velocity of the motor is 0.
-    // when the velocity is 0, we know the subsystem has reached a hardstop.
-    // then it sets the motor to a low amount of power to stop it from overheating
-    if (neut) {
-      set_mogo_position(MOGO_NEUT, 100);
-    }
-    else if (mogo_up) {
-      if (abs(get_mogo())<150) {
-        if (mogo.velocity(pct)==0) {
-          is_up = true;
-          set_mogo(0);
-        }
-        else {
-          set_mogo(is_up?0:-20);
-        }
-      }
-      else {
-        is_up = false;
-        set_mogo(-127);
-      }
-    }
-    else if (!mogo_up) {
-      if (abs(get_mogo())>abs(MOGO_OUT-100)) {
-        if (mogo.velocity(pct)==0) 
-          set_mogo(0);
-        else 
-          set_mogo(20);
-      }
-      else {
-        set_mogo(127);
-      }
-    }
-
-
+    set_mogo(mogo_dir);
 
     ///
     // Tilter
     //  - tilter has two positions, pressing L2 toggles it between them
     ///
     // Flip boolean when button is pressed
-    if (Controller1.ButtonL2.pressing() && tilter_lock==0) {
+    if ((Controller1.ButtonA.pressing() || Controller1.ButtonB.pressing()) && tilter_lock==0) {
       tilter_up = !tilter_up;
       tilter_lock = 1;
       // tilter_lock makes it so this if statement only runs once when the button is pressed
       // if this lock didn't exist, while the button is pressed, tilter_up would spam between
       // true and false, causing the mechanism to jitter
     } 
-    else if (!Controller1.ButtonL2.pressing()) {
+    else if (!Controller1.ButtonA.pressing() && !Controller1.ButtonB.pressing()) {
       tilter_lock = 0;
     }
 
